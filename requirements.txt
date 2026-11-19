@@ -1,0 +1,18 @@
+# Apple Hide My Email Creator - Dependencies
+# Python 3.10+ required
+
+# HTTP library for API requests
+requests>=2.31.0,<3.0.0
+
+# Python-dotenv for .env file support (optional, for development)
+python-dotenv>=1.0.0,<2.0.0
+
+# Hotkey, tray UI, notifications, and clipboard
+keyboard>=0.13.5,<1.0.0
+pyperclip>=1.8.2,<2.0.0
+pystray>=0.19.5,<1.0.0
+pillow>=10.0.0,<13.0.0
+winotify>=1.1.0,<2.0.0
+
+# Single-file Windows packaging
+pyinstaller>=6.0.0,<7.0.0

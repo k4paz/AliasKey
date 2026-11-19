@@ -1,0 +1,49 @@
+# Apple HME Creator - Git Ignore
+# Prevent accidental credential and build artifact commits
+
+# ── Credentials & Secrets ────────────────────────────────────────────────────
+.env
+*.env
+!.env.example
+creds.json
+credentials.json
+secrets.*
+
+# ── Build Artifacts ──────────────────────────────────────────────────────────
+build/
+dist/
+*.spec.backup
+*.exe
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+
+# ── PyInstaller ──────────────────────────────────────────────────────────────
+*.manifest
+*.spec.log
+
+# ── Output Files ─────────────────────────────────────────────────────────────
+created_emails.txt
+
+# ── IDE & Editor ─────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# ── Python ───────────────────────────────────────────────────────────────────
+venv/
+env/
+ENV/
+*.egg-info/
+.pytest_cache/
+.coverage
+
+# ── Original files with credentials (keep as local reference only) ───────────
+hme_creator.py
+GenerateEmail.txt
+SaveEmail.txt
+Error.txt
