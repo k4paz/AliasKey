@@ -4,7 +4,6 @@
 # ── Credentials & Secrets ────────────────────────────────────────────────────
 .env
 *.env
-!.env.example
 creds.json
 credentials.json
 secrets.*

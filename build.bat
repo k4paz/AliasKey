@@ -1,91 +1,63 @@
 @echo off
-REM ============================================================================
-REM Apple HME - Build Script for Windows
-REM Builds one executable:
-REM   dist\hme.exe - tray hotkey app and manual cookie editor
-REM
-REM Prerequisites:
-REM   python -m pip install -r requirements.txt
-REM ============================================================================
+setlocal
 
-echo.
-echo ============================================================================
-echo  Apple HME - Build Process
-echo ============================================================================
+echo HME build
 echo.
 
-REM --- Python check ------------------------------------------------------------
-python --version >nul 2>&1
-if %ERRORLEVEL% NEQ 0 (
-    echo [ERROR] Python is not installed or not in PATH.
-    echo Please install Python 3.10+ from https://www.python.org/
-    exit /b 1
-)
 python -c "import sys; sys.exit(0 if sys.version_info >= (3, 10) else 1)" >nul 2>&1
-if %ERRORLEVEL% NEQ 0 (
-    echo [ERROR] Python 3.10 or newer is required.
+if errorlevel 1 (
+    echo ERROR: Python 3.10 or newer is required.
     exit /b 1
 )
-
-REM --- Dependency check / install ----------------------------------------------
-echo [1/4] Checking dependencies...
 
 python -c "import PyInstaller, requests, keyboard, pyperclip, winotify, pystray, PIL" >nul 2>&1
-if %ERRORLEVEL% NEQ 0 (
-    echo   - Installing project dependencies...
+if errorlevel 1 (
+    echo Installing Python build requirements...
     python -m pip install -r requirements.txt
-    if errorlevel 1 (
-        echo [ERROR] Dependency installation failed!
-        exit /b 1
-    )
+    if errorlevel 1 exit /b 1
 )
 
-echo   - All dependencies present.
+set "ISCC="
+where ISCC.exe >nul 2>&1
+if not errorlevel 1 set "ISCC=ISCC.exe"
+if not defined ISCC if exist "%ProgramFiles(x86)%\Inno Setup 6\ISCC.exe" set "ISCC=%ProgramFiles(x86)%\Inno Setup 6\ISCC.exe"
+if not defined ISCC if exist "%ProgramFiles%\Inno Setup 6\ISCC.exe" set "ISCC=%ProgramFiles%\Inno Setup 6\ISCC.exe"
+if not defined ISCC if exist "%LOCALAPPDATA%\Programs\Inno Setup 6\ISCC.exe" set "ISCC=%LOCALAPPDATA%\Programs\Inno Setup 6\ISCC.exe"
+if not defined ISCC (
+    echo ERROR: Inno Setup 6 is required to build the installer.
+    echo Install it from https://jrsoftware.org/isdl.php and retry.
+    exit /b 1
+)
 
-REM --- Clean previous artifacts -------------------------------------------------
-echo [2/4] Cleaning previous build artifacts...
+if not exist "dist" mkdir "dist"
 if exist "dist\hme.exe" (
     del /q "dist\hme.exe"
     if exist "dist\hme.exe" (
-        echo [ERROR] Could not replace dist\hme.exe. Close HME and retry.
+        echo ERROR: Close HME before rebuilding.
         exit /b 1
     )
 )
+if exist "dist\HME-Setup.exe" del /q "dist\HME-Setup.exe"
+if exist "dist\hme-setup.exe" del /q "dist\hme-setup.exe"
 if exist "dist\hme_hotkey.exe" del /q "dist\hme_hotkey.exe"
 if exist "dist\hme_setup.exe" del /q "dist\hme_setup.exe"
-echo   - Done.
 
-REM --- Build combined HME app ---------------------------------------------------
-echo [3/4] Building hme.exe...
-echo.
 python -m PyInstaller hme_hotkey.spec --clean
-if %ERRORLEVEL% NEQ 0 (
-    echo [ERROR] hme.exe build failed!
+if errorlevel 1 exit /b 2
+if not exist "dist\hme.exe" (
+    echo ERROR: PyInstaller did not produce dist\hme.exe.
     exit /b 2
 )
 
-REM --- Verify outputs -----------------------------------------------------------
-echo [4/4] Verifying output file...
-
-if not exist "dist\hme.exe" (
-    echo [ERROR] dist\hme.exe not found!
+"%ISCC%" "installer\hme.iss"
+if errorlevel 1 exit /b 3
+if not exist "dist\HME-Setup.exe" (
+    echo ERROR: Inno Setup did not produce dist\HME-Setup.exe.
     exit /b 3
 )
-for %%A in (dist\hme.exe) do echo   - dist\hme.exe (%%~zA bytes^)
 
 echo.
-echo ============================================================================
-echo  Build Complete!
-echo ============================================================================
-echo.
-echo  dist\hme.exe          - hotkey app, tray, and cookie editor
-echo.
-echo Next steps:
-echo   double-click dist\hme.exe (runs in the system tray)
-echo   press Ctrl+Win+Alt+H to generate ^& copy an alias
-echo   use tray menu Edit cookies to update session values
-echo   stop it with the tray icon Quit option
-echo.
-echo ============================================================================
-
+echo Build complete:
+echo   dist\hme.exe
+echo   dist\HME-Setup.exe
 exit /b 0

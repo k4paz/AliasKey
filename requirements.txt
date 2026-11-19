@@ -4,9 +4,6 @@
 # HTTP library for API requests
 requests>=2.31.0,<3.0.0
 
-# Python-dotenv for .env file support (optional, for development)
-python-dotenv>=1.0.0,<2.0.0
-
 # Hotkey, tray UI, notifications, and clipboard
 keyboard>=0.13.5,<1.0.0
 pyperclip>=1.8.2,<2.0.0

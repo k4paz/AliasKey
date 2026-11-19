@@ -1,6 +1,6 @@
 # -*- mode: python ; coding: utf-8 -*-
 #
-# PyInstaller spec for the combined HME tray app and cookie editor
+# PyInstaller spec for the combined HME tray app and session editor
 # Build: pyinstaller hme_hotkey.spec --clean
 #
 # Produces dist\hme.exe (single-file executable with tray and setup UI)
@@ -29,15 +29,10 @@ a = Analysis(
         'pyperclip',
         # Toast notifications
         'winotify',
-        # Tray icon (optional – included so the exe works if pystray is installed)
+        # Tray icon
         'pystray',
         'PIL',
         'PIL.Image',
-        'PIL.ImageDraw',
-        # .env support when running from source (not needed in exe, harmless to include)
-        'dotenv',
-        # Setup window launched by the tray menu
-        'hme_setup',
     ],
     hookspath=[],
     hooksconfig={},
@@ -60,6 +55,8 @@ a = Analysis(
         'PySide2',
         'PySide6',
         'wx',
+        # Optional urllib3 integration; requests uses Windows' standard TLS stack.
+        'cryptography',
     ],
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
